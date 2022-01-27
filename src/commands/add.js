@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { readFile } from "fs";
 import path from "path";
 import textract from "@nosferatu500/textract-lite";
-import launch, { login } from "../utils/puppeteer.js";
+import launch, { addItem, login } from "../utils/puppeteer.js";
 
 const add = async (filename, email, password) => {
   console.log(chalk.blue.bold(`Importing wishlist from ${filename}...`));
@@ -15,14 +15,16 @@ const add = async (filename, email, password) => {
     const regEx = /\d+/g;
     const catIds = text.match(regEx);
 
-    catIds.forEach((id) => {
-      // console.log(chalk.blue.bold(`Adding to wishlist for item ${id}...`));
-    });
+    await launch();
 
-    const { browser, page } = await launch();
+    await login(email, password);
 
-    await login(page, email, password);
-
+    for (let i = 0; i < catIds.length; i++) {
+      console.log(
+        chalk.blue.bold(`Adding to wishlist for item ${catIds[i]}...`)
+      );
+      await addItem(catIds[i]);
+    }
     // await browser.close();
   });
 
